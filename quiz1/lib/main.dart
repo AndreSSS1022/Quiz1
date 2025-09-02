@@ -53,16 +53,52 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
 
+  // 1. Lista de bares
+  final List<String> _bares = [
+    'Andrés Carne de Res',
+    'El Coq',
+    'Theatron',
+    'Armando Records',
+    'Gaira Café',
+    'El Irish',
+    'La Chula',
+    'El Candelario',
+    'Bogotá Beer Company',
+    'El Mono Bandido',
+  ];
+
+  // 2. Método para filtrar bares
+  List<String> get _baresFiltrados {
+    if (_searchController.text.isEmpty) return _bares;
+    return _bares
+        .where((bar) => bar.toLowerCase().contains(_searchController.text.toLowerCase()))
+        .toList();
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 3. Escuchar cambios en el buscador para actualizar la lista
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -103,18 +139,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Puedes eliminar el buscador de aquí si ya no lo quieres en el body
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _baresFiltrados.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              title: Text(_baresFiltrados[index]),
+              leading: Icon(Icons.local_bar),
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
